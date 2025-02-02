@@ -3,7 +3,7 @@ import { useAuthContext } from './useAuthContext'
 
 export const useLogin = () => {
   const [error, setError] = useState(null)
-  const [isLoading, setIsLoading] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
   const { dispatch } = useAuthContext()
 
   const login = async (email, password) => {
@@ -17,38 +17,30 @@ export const useLogin = () => {
         body: JSON.stringify({ email, password })
       })
 
-      const text = await response.text(); // Get raw response text
-      console.log('Raw response:', text);
-
-      let json;
-      try {
-        json = JSON.parse(text); // Try to parse it as JSON
-      } catch (e) {
-        console.error('Error parsing JSON:', e);
-        setError('An unexpected error occurred');
-        setIsLoading(false);
-        return;
-      }
-
+      // Check if response is ok
       if (!response.ok) {
+        const text = await response.text() // Get raw response text
+        setError(text || 'An error occurred during login')
         setIsLoading(false)
-        setError(json.error)
-        return;
+        return
       }
 
+      // Try parsing JSON if the response is ok
+      const json = await response.json()
+      
       // Save the user to local storage
       localStorage.setItem('user', JSON.stringify(json))
 
-      // Update the auth context
+      // Dispatch the login action to update context
       dispatch({ type: 'LOGIN', payload: json })
 
-      // Update loading state
+      // Set loading state to false
       setIsLoading(false)
 
     } catch (error) {
-      console.error('Login failed:', error);
-      setIsLoading(false);
-      setError('Something went wrong. Please try again.');
+      console.error('Login failed:', error)
+      setIsLoading(false)
+      setError('Something went wrong. Please try again.')
     }
   }
 
