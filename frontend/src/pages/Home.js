@@ -7,30 +7,25 @@ import WorkoutDetails from '../components/WorkoutDetails'
 import WorkoutForm from '../components/WorkoutForm'
 
 const Home = () => {
-  const { workouts, dispatch } = useWorkoutsContext()
-  const { user } = useAuthContext()
+  const {workouts, dispatch} = useWorkoutsContext()
+  const {user} = useAuthContext()
 
   useEffect(() => {
     const fetchWorkouts = async () => {
-      if (!user) {
-        return // Do not proceed if user is not logged in
-      }
-
       const response = await fetch('/api/workouts', {
-        headers: {'Authorization': `Bearer ${user.token}`}
+        headers: {'Authorization': `Bearer ${user.token}`},
       })
+      const json = await response.json()
 
       if (response.ok) {
-        const json = await response.json()
-        dispatch({ type: 'SET_WORKOUTS', payload: json })
-      } else {
-        // Handle errors (e.g., 404 or 500)
-        console.error('Failed to fetch workouts:', await response.text())
+        dispatch({type: 'SET_WORKOUTS', payload: json})
       }
     }
 
-    fetchWorkouts()
-  }, [dispatch, user]) // Re-run when 'user' or 'dispatch' changes
+    if (user) {
+      fetchWorkouts()
+    }
+  }, [dispatch, user])
 
   return (
     <div className="home">
