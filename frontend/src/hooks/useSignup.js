@@ -3,7 +3,7 @@ import { useAuthContext } from './useAuthContext'
 
 export const useSignup = () => {
   const [error, setError] = useState(null)
-  const [isLoading, setIsLoading] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
   const { dispatch } = useAuthContext()
 
   const signup = async (email, password) => {
@@ -17,7 +17,6 @@ export const useSignup = () => {
         body: JSON.stringify({ email, password })
       })
 
-      // Check for response OK status and handle errors accordingly
       if (!response.ok) {
         const errorData = await response.json()
         setError(errorData.error || 'Signup failed')
@@ -25,25 +24,19 @@ export const useSignup = () => {
         return
       }
 
-      // Handle empty response bodies
-      const jsonResponse = await response.text() // Fetch as text first
-      const data = jsonResponse ? JSON.parse(jsonResponse) : {}
-
-      // Log to check the response
-      console.log('Response JSON:', data)
+      const json = await response.json()
 
       // Save user data to localStorage and dispatch to context
-      localStorage.setItem('user', JSON.stringify(data))
+      localStorage.setItem('user', JSON.stringify(json))
 
       // Update the auth context
-      dispatch({ type: 'LOGIN', payload: data })
+      dispatch({ type: 'LOGIN', payload: json })
 
-      // Set loading state to false
       setIsLoading(false)
 
     } catch (err) {
-      console.error('Error parsing JSON:', err)
-      setError('An error occurred during signup. Please try again later.')
+      console.error('Error:', err)
+      setError('An error occurred during signup.')
       setIsLoading(false)
     }
   }
