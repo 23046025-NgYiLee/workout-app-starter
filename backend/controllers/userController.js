@@ -1,3 +1,4 @@
+// userController.js
 const User = require('../models/userModel')
 const jwt = require('jsonwebtoken')
 
@@ -11,13 +12,10 @@ const loginUser = async (req, res) => {
 
   try {
     const user = await User.login(email, password)
-
-    // create a token
     const token = createToken(user._id)
-
-    res.status(200).json({email, token})
+    res.status(200).json({email: user.email, token})  // Ensure the correct response structure
   } catch (error) {
-    res.status(400).json({error: error.message})
+    res.status(400).json({error: error.message || 'An error occurred during login.'})  // Always return a message
   }
 }
 
@@ -27,13 +25,10 @@ const signupUser = async (req, res) => {
 
   try {
     const user = await User.signup(email, password)
-
-    // create a token
     const token = createToken(user._id)
-
-    res.status(200).json({email, token})
+    res.status(200).json({email: user.email, token})  // Ensure the correct response structure
   } catch (error) {
-    res.status(400).json({error: error.message})
+    res.status(400).json({error: error.message || 'An error occurred during signup.'})  // Always return a message
   }
 }
 
