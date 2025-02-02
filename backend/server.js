@@ -8,6 +8,9 @@ const userRoutes = require('./routes/user')
 // express app
 const app = express()
 
+const cors = require('cors')
+app.use(cors())
+
 // middleware
 app.use(express.json())
 
