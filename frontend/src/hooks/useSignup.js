@@ -11,32 +11,41 @@ export const useSignup = () => {
     setError(null)
 
     try {
+      // Perform the POST request to signup endpoint
       const response = await fetch('/api/user/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       })
 
+      // Check if the response is not ok (e.g., status code 4xx or 5xx)
       if (!response.ok) {
         const errorData = await response.json()
-        setError(errorData.error || 'Signup failed')
+        setError(errorData.error || 'Signup failed. Please try again.')
         setIsLoading(false)
         return
       }
 
       const json = await response.json()
 
-      // Save user data to localStorage and dispatch to context
+      // Check if the JSON response contains the token and user data
+      if (!json.token) {
+        setError('Invalid response from server')
+        setIsLoading(false)
+        return
+      }
+
+      // Save the user data to localStorage and dispatch to context
       localStorage.setItem('user', JSON.stringify(json))
 
-      // Update the auth context
+      // Update the auth context with the user data
       dispatch({ type: 'LOGIN', payload: json })
 
       setIsLoading(false)
 
     } catch (err) {
-      console.error('Error:', err)
-      setError('An error occurred during signup.')
+      console.error('Error during signup:', err)
+      setError('An error occurred during signup. Please try again.')
       setIsLoading(false)
     }
   }

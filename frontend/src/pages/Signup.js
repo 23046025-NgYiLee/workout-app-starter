@@ -9,6 +9,12 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    // Validate that email and password are not empty
+    if (!email || !password) {
+      alert("Please fill in both fields")
+      return
+    }
+
     // Call the signup function when the form is submitted
     await signup(email, password)
   }
@@ -22,6 +28,7 @@ const Signup = () => {
         type="email" 
         onChange={(e) => setEmail(e.target.value)} 
         value={email} 
+        required
       />
 
       <label>Password:</label>
@@ -29,9 +36,11 @@ const Signup = () => {
         type="password" 
         onChange={(e) => setPassword(e.target.value)} 
         value={password} 
+        required
       />
 
-      <button disabled={isLoading}>Sign up</button>
+      <button type="submit" disabled={isLoading}>Sign up</button>
+      {isLoading && <div>Loading...</div>}
       {error && <div className="error">{error}</div>}
     </form>
   )
