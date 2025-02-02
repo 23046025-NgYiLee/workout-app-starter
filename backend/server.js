@@ -1,4 +1,3 @@
-// server.js
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -9,8 +8,15 @@ const userRoutes = require('./routes/user');
 // Express app
 const app = express();
 
-// CORS setup
-app.use(cors());
+// CORS setup to allow only specific origins (adjust accordingly)
+const corsOptions = {
+  origin: 'http://localhost:3000', // replace with your React app's origin if different
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'], // allow Authorization if using JWT
+  credentials: true, // if you want to allow cookies in requests
+};
+
+app.use(cors(corsOptions));
 
 // Middleware to parse JSON
 app.use(express.json());
