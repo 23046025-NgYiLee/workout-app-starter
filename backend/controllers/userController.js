@@ -1,42 +1,44 @@
-const User = require('../models/userModel')
-const jwt = require('jsonwebtoken')
+// userController.js
+const User = require('../models/userModel');
+const jwt = require('jsonwebtoken');
 
+// Create a JWT token for user authentication
 const createToken = (_id) => {
-  return jwt.sign({_id}, process.env.SECRET, { expiresIn: '3d' })
-}
+  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: '3d' });
+};
 
-// login a user
+// Login a user
 const loginUser = async (req, res) => {
-  const { email, password } = req.body
+  const { email, password } = req.body;
 
   try {
-    const user = await User.login(email, password)
+    const user = await User.login(email, password);
 
-    // create a token
-    const token = createToken(user._id)
+    // Create a token
+    const token = createToken(user._id);
 
-    res.status(200).json({ email: user.email, token })
+    // Send response with token
+    res.status(200).json({ email, token });
   } catch (error) {
-    // Send a well-formed JSON response with an error message
-    res.status(400).json({ error: error.message || 'Login failed' })
+    res.status(400).json({ error: error.message });
   }
-}
+};
 
-// signup a user
+// Signup a user
 const signupUser = async (req, res) => {
-  const { email, password } = req.body
+  const { email, password } = req.body;
 
   try {
-    const user = await User.signup(email, password)
+    const user = await User.signup(email, password);
 
-    // create a token
-    const token = createToken(user._id)
+    // Create a token
+    const token = createToken(user._id);
 
-    res.status(200).json({ email: user.email, token })
+    // Send response with token
+    res.status(200).json({ email, token });
   } catch (error) {
-    // Ensure we send a valid JSON response
-    res.status(400).json({ error: error.message || 'Signup failed' })
+    res.status(400).json({ error: error.message });
   }
-}
+};
 
-module.exports = { signupUser, loginUser }
+module.exports = { signupUser, loginUser };
