@@ -18,18 +18,30 @@ export const useSignup = () => {
         body: JSON.stringify({ email, password })
       })
 
+      // Log the response status and text for debugging
+      console.log('Response Status:', response.status)
+      const text = await response.text() // Read the response as text first
+      console.log('Response Body:', text)
+
       // Check if the response is not ok (e.g., status code 4xx or 5xx)
       if (!response.ok) {
-        const errorData = await response.json()
-        setError(errorData.error || 'Signup failed. Please try again.')
+        setError('Signup failed. Please try again.')
         setIsLoading(false)
         return
       }
 
-      const json = await response.json()
+      let json;
+      try {
+        json = JSON.parse(text)  // Attempt to parse JSON
+      } catch (e) {
+        console.error('Error parsing JSON:', e)
+        setError('An error occurred during signup. Please try again.')
+        setIsLoading(false)
+        return
+      }
 
       // Check if the JSON response contains the token and user data
-      if (!json.token) {
+      if (!json.token || !json.user) {
         setError('Invalid response from server')
         setIsLoading(false)
         return
