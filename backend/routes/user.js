@@ -1,14 +1,29 @@
-const express = require('express')
+const mongoose = require("mongoose");
 
-// controller functions
-const { loginUser, signupUser } = require('../controllers/userController')
+const Schema = mongoose.Schema;
 
-const router = express.Router()
+const workoutSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    reps: {
+      type: Number,
+      required: true,
+    },
+    load: {
+      type: Number,
+      required: true,
+    },
+    user_id: {
+      type: String,
+      required: true
+    }
+  },
+  {
+    timestamps: true,
+  }
+);
 
-// login route
-router.post('/login', loginUser)
-
-// signup route
-router.post('/signup', signupUser)
-
-module.exports = router
+module.exports = mongoose.model("Workout", workoutSchema);
