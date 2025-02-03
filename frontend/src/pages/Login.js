@@ -1,41 +1,38 @@
-// Login.js
-import React, { useState } from 'react';
-import { useLogin } from '../hooks/useLogin';
+import { useState } from "react"
+import { useSignup } from "../hooks/useSignup"
 
-const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { login, error, isLoading } = useLogin();
+const Signup = () => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const {signup, error, isLoading} = useSignup()
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    await login(email, password);
-  };
+    e.preventDefault()
+
+    await signup(email, password)
+  }
 
   return (
-    <form className="login" onSubmit={handleSubmit}>
-      <h3>Log In</h3>
-
+    <form className="signup" onSubmit={handleSubmit}>
+      <h3>Sign Up</h3>
+      
       <label>Email address:</label>
-      <input
-        type="email"
-        onChange={(e) => setEmail(e.target.value)}
-        value={email}
-        required
+      <input 
+        type="email" 
+        onChange={(e) => setEmail(e.target.value)} 
+        value={email} 
       />
-
       <label>Password:</label>
-      <input
-        type="password"
-        onChange={(e) => setPassword(e.target.value)}
-        value={password}
-        required
+      <input 
+        type="password" 
+        onChange={(e) => setPassword(e.target.value)} 
+        value={password} 
       />
 
-      <button disabled={isLoading}>Log in</button>
+      <button disabled={isLoading}>Sign up</button>
       {error && <div className="error">{error}</div>}
     </form>
-  );
-};
+  )
+}
 
-export default Login;
+export default Signup

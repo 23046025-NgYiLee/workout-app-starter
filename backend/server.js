@@ -1,44 +1,33 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const workoutRoutes = require('./routes/workouts');
-const userRoutes = require('./routes/user');
+require('dotenv').config()
 
-// Express app
-const app = express();
+const express = require('express')
+const mongoose = require('mongoose')
+const workoutRoutes = require('./routes/workouts')
+const userRoutes = require('./routes/user')
 
-// CORS setup to allow only specific origins (adjust accordingly)
-const corsOptions = {
-  origin: 'http://localhost:3000', // replace with your React app's origin if different
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'], // allow Authorization if using JWT
-  credentials: true, // if you want to allow cookies in requests
-};
+// express app
+const app = express()
 
-app.use(cors(corsOptions));
+// middleware
+app.use(express.json())
 
-// Middleware to parse JSON
-app.use(express.json());
-
-// Log incoming requests
 app.use((req, res, next) => {
-  console.log(req.path, req.method);
-  next();
-});
+  console.log(req.path, req.method)
+  next()
+})
 
-// Routes
-app.use('/api/workouts', workoutRoutes);
-app.use('/api/user', userRoutes);
+// routes
+app.use('/api/workouts', workoutRoutes)
+app.use('/api/user', userRoutes)
 
-// Connect to the database
-mongoose
-  .connect(process.env.MONGO_URI)
+// connect to db
+mongoose.connect(process.env.MONGO_URI)
   .then(() => {
+    // listen for requests
     app.listen(process.env.PORT, () => {
-      console.log('Connected to DB & listening on port', process.env.PORT);
-    });
+      console.log('connected to db & listening on port', process.env.PORT)
+    })
   })
   .catch((error) => {
-    console.log(error);
-  });
+    console.log(error)
+  })
