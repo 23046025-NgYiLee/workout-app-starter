@@ -21,13 +21,17 @@ export const useSignup = () => {
       json = await response.json();
     } catch (e) {
       json = null;
+      console.error('Failed to parse JSON response:', e);
     }
+
+    console.log('Server response:', response);
+    console.log('Parsed JSON:', json);
 
     if (!response.ok) {
       setIsLoading(false);
       setError(json ? json.error : 'An error occurred');
     }
-    if (response.ok) {
+    if (response.ok && json) {
       // save the user to local storage
       localStorage.setItem('user', JSON.stringify(json));
 
