@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useAuthContext } from './useAuthContext';
 
 export const useSignup = () => {
@@ -17,18 +17,22 @@ export const useSignup = () => {
         body: JSON.stringify({ email, password }),
       });
 
-      const json = await response.json();
       if (!response.ok) {
-        setError(json.error);
+        const errorData = await response.json();
+        setError(errorData.error);
         setIsLoading(false);
         return;
       }
 
-      localStorage.setItem('user', JSON.stringify(json));
-      dispatch({ type: 'LOGIN', payload: json });
+      const jsonData = await response.json();
+      console.log('Server response JSON:', jsonData);
+
+      localStorage.setItem('user', JSON.stringify(jsonData));
+      dispatch({ type: 'LOGIN', payload: jsonData });
 
       setIsLoading(false);
     } catch (error) {
+      console.error('Failed to signup:', error);
       setError('An error occurred');
       setIsLoading(false);
     }
