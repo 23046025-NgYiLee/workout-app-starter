@@ -17,20 +17,20 @@ export const useSignup = () => {
         body: JSON.stringify({ email, password }),
       });
 
+      const json = await response.json();
+      console.log('Server response JSON:', json);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.error);
+        setError(json.error);
         setIsLoading(false);
         return;
       }
 
-      const jsonData = await response.json();
-
       // save the user to local storage
-      localStorage.setItem('user', JSON.stringify(jsonData));
+      localStorage.setItem('user', JSON.stringify(json));
 
       // update the auth context
-      dispatch({ type: 'LOGIN', payload: jsonData });
+      dispatch({ type: 'LOGIN', payload: json });
 
       setIsLoading(false);
     } catch (error) {
