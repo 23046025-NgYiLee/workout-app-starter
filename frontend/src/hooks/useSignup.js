@@ -10,34 +10,32 @@ export const useSignup = () => {
     setIsLoading(true);
     setError(null);
 
-    const response = await fetch('/api/user/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-
-    let json;
     try {
-      const text = await response.text();
-      console.log('Server response text:', text);
-      json = text ? JSON.parse(text) : null;
-    } catch (e) {
-      json = null;
-      console.error('Failed to parse JSON response:', e);
-    }
+      const response = await fetch('/api/user/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!response.ok) {
-      setIsLoading(false);
-      setError(json ? json.error : 'An error occurred');
-    }
-    if (response.ok && json) {
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.error);
+        setIsLoading(false);
+        return;
+      }
+
+      const jsonData = await response.json();
+
       // save the user to local storage
-      localStorage.setItem('user', JSON.stringify(json));
+      localStorage.setItem('user', JSON.stringify(jsonData));
 
       // update the auth context
-      dispatch({ type: 'LOGIN', payload: json });
+      dispatch({ type: 'LOGIN', payload: jsonData });
 
-      // update loading state
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Failed to signup:', error);
+      setError('An error occurred');
       setIsLoading(false);
     }
   };
