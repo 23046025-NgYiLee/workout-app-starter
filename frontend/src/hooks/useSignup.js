@@ -1,42 +1,37 @@
-import { useState } from 'react';
-import { useAuthContext } from './useAuthContext';
+import { useState } from 'react'
+import { useAuthContext } from './useAuthContext'
 
 export const useSignup = () => {
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const { dispatch } = useAuthContext();
+  const [error, setError] = useState(null)
+  const [isLoading, setIsLoading] = useState(null)
+  const { dispatch } = useAuthContext()
 
   const signup = async (email, password) => {
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
 
-    try {
-      const response = await fetch('/api/user/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+    const response = await fetch('/api/user/signup', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ email, password })
+    })
+    const json = await response.json()
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.error);
-        setIsLoading(false);
-        return;
-      }
-
-      const jsonData = await response.json();
-      console.log('Server response JSON:', jsonData);
-
-      localStorage.setItem('user', JSON.stringify(jsonData));
-      dispatch({ type: 'LOGIN', payload: jsonData });
-
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Failed to signup:', error);
-      setError('An error occurred');
-      setIsLoading(false);
+    if (!response.ok) {
+      setIsLoading(false)
+      setError(json.error)
     }
-  };
+    if (response.ok) {
+      // save the user to local storage
+      localStorage.setItem('user', JSON.stringify(json))
 
-  return { signup, isLoading, error };
-};
+      // update the auth context
+      dispatch({type: 'LOGIN', payload: json})
+
+      // update loading state
+      setIsLoading(false)
+    }
+  }
+
+  return { signup, isLoading, error }
+}
