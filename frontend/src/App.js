@@ -1,16 +1,37 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import { WorkoutsContextProvider } from './context/WorkoutsContext';
-import { AuthContextProvider } from './context/AuthContext';
+import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
+import { useAuthContext } from './hooks/useAuthContext';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <AuthContextProvider>
-      <WorkoutsContextProvider>
-        <App />
-      </WorkoutsContextProvider>
-    </AuthContextProvider>
-  </React.StrictMode>
-);
+import Home from './pages/Home';
+import Navbar from './components/Navbar';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+
+function App() {
+  const {user} = useAuthContext();
+
+  return(
+    <div className="App">
+      <BrowserRouter>
+        <Navbar/>
+        <div className='pages'>
+          <Routes>
+            <Route 
+              path='/' 
+              element={user ? <Home/> : <Navigate to="/login"/>}
+            />
+            <Route 
+              path='/login' 
+              element={!user ? <Login/> : <Navigate to="/"/>}
+            />
+            <Route 
+              path='/signup' 
+              element={!user ? <Signup/> : <Navigate to="/"/>}
+            />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </div>
+  )
+}
+
+export default App;
